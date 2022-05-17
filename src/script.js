@@ -5,42 +5,36 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
-/**
- * Base
- */
-// Debug
+/** Base */
+
+/** Debug */
 const gui = new dat.GUI({
   width: 400,
 });
 
-// Canvas
+/** Canvas */
 const canvas = document.querySelector("canvas.webgl");
 
-// Scene
+/** Scene */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x626666);
-/**
- * Loaders
- */
-// Texture loader
+
+/** Loaders */
+/** Texture loader */
 // const textureLoader = new THREE.TextureLoader();
 
-// Draco loader
+/** Draco loader */
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("draco/");
 
-// GLTF loader
+/** GLTF loader */
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-/**
- * Raycaster
- */
+/** Raycaster */
 const raycaster = new THREE.Raycaster();
 
-/**
- * light
- */
+/** light */
 const light1 = new THREE.PointLight(0xffffff, 1, 800);
 light1.position.set(-2, -1, 0);
 scene.add(light1);
@@ -57,13 +51,11 @@ gui.add(light2.position, "x").min(-150).max(100).step(0.25).name("light2 X");
 gui.add(light2.position, "y").min(-150).max(100).step(0.25).name("light2 Y");
 gui.add(light2.position, "z").min(-150).max(100).step(0.25).name("light2 Z");
 
-// White directional light at half intensity shining from the top.
+/** White directional light at half intensity shining from the top. */
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 scene.add(directionalLight);
 
-/**
- * helper
- */
+/** helper */
 
 // const helper = new THREE.DirectionalLightHelper(directionalLight, 5);
 // scene.add(helper);
@@ -76,59 +68,64 @@ scene.add(directionalLight);
 // const pointLightHelper2 = new THREE.PointLightHelper(light2, sphereSize2);
 // scene.add(pointLightHelper2);
 
-/**
- * Model
- */
-let mixer = null;
-let mixer1 = null;
-let mixer2 = null;
-let mixer3 = null;
-let male = null;
-let dots;
+/** Model */
+// let mixer = null;
+// let mixer1 = null;
+// let mixer2 = null;
+// let mixer3 = null;
+// let male = null;
+// let dots;
+let sideNumber = 10;
 
 gltfLoader.load("boschbeton.glb", (gltf) => {
-  console.log(gltf);
-  // male = gltf.scene.children;
+  const model = gltf.scene;
+  model.scale.set(0.5, 0.5, 0.5);
+  const rightSide = model.children[1];
+  const lefttSide = model.children[2];
 
-  // dots = male.find((ele) => ele.name === "3dots");
-  // dots.visible = false;
+  for (let i = 2; i < sideNumber; i++) {
+    let cloneRightSide = rightSide.clone();
+    let cloneLeftSide = lefttSide.clone();
 
-  // mixer = new THREE.AnimationMixer(gltf.scene);
-  // const action = mixer.clipAction(gltf.animations[0]);
-  // action.play();
+    cloneRightSide.position.set(
+      cloneRightSide.position.x,
+      cloneRightSide.position.y,
+      (cloneRightSide.position.z + i) * -1
+    );
 
-  // mixer1 = new THREE.AnimationMixer(gltf.scene);
-  // const action1 = mixer1.clipAction(gltf.animations[1]);
-  // action1.play();
+    cloneLeftSide.position.set(
+      cloneLeftSide.position.x,
+      cloneLeftSide.position.y,
+      (cloneLeftSide.position.z + i) * -1
+    );
 
-  // mixer2 = new THREE.AnimationMixer(gltf.scene);
-  // const action2 = mixer2.clipAction(gltf.animations[2]);
-  // action2.play();
+    cloneRightSide.scale.set(0.5, 0.5, 0.5);
+    cloneLeftSide.scale.set(0.5, 0.5, 0.5);
 
-  // mixer3 = new THREE.AnimationMixer(gltf.scene);
-  // const action3 = mixer3.clipAction(gltf.animations[3]);
-  // action3.play();
+    scene.add(cloneRightSide, cloneLeftSide);
+  }
+
+  gui
+    .add(model.rotation, "x")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation X");
+  gui
+    .add(model.rotation, "y")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation Y");
+  gui
+    .add(model.rotation, "z")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation Z");
 
   scene.add(gltf.scene);
 });
-
-/**
- * Mouse
- */
-// const mouse = new THREE.Vector2();
-
-// window.addEventListener("click", (e) => {
-//   dots.visible = false;
-
-//   mouse.x = (e.clientX / sizes.width) * 2 - 1;
-//   mouse.y = -(e.clientY / sizes.height) * 2 + 1;
-//   raycaster.setFromCamera(mouse, camera);
-
-//   const intersects = raycaster.intersectObjects(male, true);
-//   if (intersects[0].object.parent.name === "male002") {
-//     dots.visible = true;
-//   }
-// });
 
 /**
  * Sizes
@@ -139,42 +136,44 @@ const sizes = {
 };
 
 window.addEventListener("resize", () => {
-  // Update sizes
+  /** Update sizes */
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
-  // Update camera
+  /** Update camera */
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
 
-  // Update renderer
+  /**  Update renderer */
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
 });
 
-/**
- * Camera
- */
-// Base camera
+/** Camera */
+
+/** Base camera */
 const camera = new THREE.PerspectiveCamera(
   45,
   sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.x = 4;
-camera.position.y = 2;
-camera.position.z = 4;
+camera.position.x = -10.25;
+camera.position.y = 4;
+camera.position.z = 9.25;
+
+gui.add(camera.position, "x").min(-150).max(100).step(0.25).name("camera X");
+gui.add(camera.position, "y").min(-150).max(100).step(0.25).name("camera Y");
+gui.add(camera.position, "z").min(-150).max(100).step(0.25).name("camera Z");
+
 scene.add(camera);
 
-// Controls
+/** Controls */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-/**
- * Renderer
- */
+/** Renderer */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
@@ -183,9 +182,7 @@ renderer.clearColor("0xffffff");
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-/**
- * Animate
- */
+/** Animate */
 const clock = new THREE.Clock();
 let previousTime = 0;
 
@@ -210,13 +207,13 @@ const tick = () => {
   //   mixer3.update(deltaTime);
   // }
 
-  // Update controls
+  /** Update controls */
   controls.update();
 
-  // Render
+  /** Render */
   renderer.render(scene, camera);
 
-  // Call tick again on the next frame
+  /** Call tick again on the next frame */
   window.requestAnimationFrame(tick);
 };
 
