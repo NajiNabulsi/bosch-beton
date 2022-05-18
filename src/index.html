@@ -1,11 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>35 - Importing and optimizing the scene</title>
-</head>
-<body>
-    <canvas class="webgl"></canvas>
-</body>
+  </head>
+  <body>
+    <div class="main">
+      <canvas class="webgl"></canvas>
+      <div class="form">
+        <!-- <button class="btn">click me</button> -->
+        <div>
+          <label for="side-number" class="label-side-number">change here</label>
+          <input
+            name="side-number"
+            type="number"
+            class="side-numbers"
+            value="2"
+            min="2"
+            max="20"
+            step="1"
+          />
+        </div>
+        <div>
+          <label for="side-number" class="label-side-number"
+            >change width</label
+          >
+          <input type="number" min="1" max="50" step="1" class="side-width" />
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

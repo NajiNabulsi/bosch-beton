@@ -6,18 +6,84 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
 /** Base */
+let sideNumber = 2;
+let cloneRightSide = new THREE.Object3D();
+let cloneLeftSide;
+const rightGroup = new THREE.Group();
+const leftGroup = new THREE.Group();
+let rightSide;
+let lefttSide;
 
 /** Debug */
 const gui = new dat.GUI({
-  width: 400,
+  width: 200,
+  closed: true,
 });
 
-/** Canvas */
+/** Query Selector */
 const canvas = document.querySelector("canvas.webgl");
+const inputNumberOfSide = document.querySelector(".side-numbers");
+const inputSideWidth = document.querySelector(".side-width");
+
+/** addEventListener */
+inputNumberOfSide.addEventListener("change", (e) => {
+  sideNumber = e.target.value;
+  // sideNumber = parseInt(inputNumberOfSide.value);
+  sideLoop(sideNumber);
+});
+
+inputSideWidth.addEventListener("change", (e) => {
+  const widthOfSide = e.target.value;
+  rightGroup.position.x = parseInt(widthOfSide);
+});
+/** end EventListener */
+
+/** function */
+const sideLoop = (num) => {
+  const lastElement = rightGroup.children.length - 1;
+  const last = rightGroup.children.length;
+  let x = num - last;
+
+  if (last > num) {
+    let removeEle = rightGroup.children.length - num;
+    console.log("last: ", last);
+    for (let i = 0; i < removeEle; i++) {
+      let le = rightGroup.children.length - 1;
+      let elId = rightGroup.children[le].uuid;
+
+      console.log("cloneRightSide: ", cloneRightSide);
+      console.log("rightGroup: ", rightGroup.children[le]);
+      console.log("removeEle: ", removeEle);
+
+      rightGroup.remove(rightGroup.children[le]);
+      scene.add(rightGroup);
+
+      console.log("last loop: ", last);
+    }
+  } else {
+    for (let i = 0; i <= x; i++) {
+      let pos = rightGroup.children[lastElement].position;
+      let posLeft = leftGroup.children[lastElement].position;
+
+      cloneRightSide = rightSide.clone();
+      cloneLeftSide = lefttSide.clone();
+
+      cloneRightSide.position.set(pos.x, pos.y, pos.z + 2 * -2);
+      rightGroup.add(cloneRightSide);
+      rightGroup.scale.set(0.5, 0.5, 0.5);
+
+      cloneLeftSide.position.set(posLeft.x, posLeft.y, posLeft.z + 2 * -2);
+
+      leftGroup.add(cloneLeftSide);
+      leftGroup.scale.set(0.5, 0.5, 0.5);
+    }
+  }
+  scene.add(rightGroup, leftGroup);
+};
 
 /** Scene */
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x626666);
+scene.background = new THREE.Color(0xd9eaf9);
 
 /** Loaders */
 /** Texture loader */
@@ -32,7 +98,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 /** Raycaster */
-const raycaster = new THREE.Raycaster();
+// const raycaster = new THREE.Raycaster();
 
 /** light */
 const light1 = new THREE.PointLight(0xffffff, 1, 800);
@@ -55,55 +121,24 @@ gui.add(light2.position, "z").min(-150).max(100).step(0.25).name("light2 Z");
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 scene.add(directionalLight);
 
-/** helper */
+/** soft white light */
+const light = new THREE.AmbientLight(0x404040);
+scene.add(light);
 
-// const helper = new THREE.DirectionalLightHelper(directionalLight, 5);
-// scene.add(helper);
-
-// const sphereSize = 1;
-// const pointLightHelper = new THREE.PointLightHelper(light1, sphereSize);
-// scene.add(pointLightHelper);
-
-// const sphereSize2 = 1;
-// const pointLightHelper2 = new THREE.PointLightHelper(light2, sphereSize2);
-// scene.add(pointLightHelper2);
-
-/** Model */
-// let mixer = null;
-// let mixer1 = null;
-// let mixer2 = null;
-// let mixer3 = null;
-// let male = null;
-// let dots;
-let sideNumber = 10;
-
+/** Loader */
 gltfLoader.load("boschbeton.glb", (gltf) => {
   const model = gltf.scene;
   model.scale.set(0.5, 0.5, 0.5);
-  const rightSide = model.children[1];
-  const lefttSide = model.children[2];
+  rightSide = model.children[1];
+  lefttSide = model.children[2];
 
-  for (let i = 2; i < sideNumber; i++) {
-    let cloneRightSide = rightSide.clone();
-    let cloneLeftSide = lefttSide.clone();
+  rightGroup.add(rightSide);
+  leftGroup.add(lefttSide);
+  rightGroup.scale.set(0.5, 0.5, 0.5);
+  leftGroup.scale.set(0.5, 0.5, 0.5);
+  // cloneLeftSide = lefttSide.clone();
 
-    cloneRightSide.position.set(
-      cloneRightSide.position.x,
-      cloneRightSide.position.y,
-      (cloneRightSide.position.z + i) * -1
-    );
-
-    cloneLeftSide.position.set(
-      cloneLeftSide.position.x,
-      cloneLeftSide.position.y,
-      (cloneLeftSide.position.z + i) * -1
-    );
-
-    cloneRightSide.scale.set(0.5, 0.5, 0.5);
-    cloneLeftSide.scale.set(0.5, 0.5, 0.5);
-
-    scene.add(cloneRightSide, cloneLeftSide);
-  }
+  sideLoop(sideNumber);
 
   gui
     .add(model.rotation, "x")
@@ -124,12 +159,10 @@ gltfLoader.load("boschbeton.glb", (gltf) => {
     .step(0.01)
     .name("model rotation Z");
 
-  scene.add(gltf.scene);
-});
+  scene.add(gltf.scene, rightGroup, leftGroup);
+}); /** end loader */
 
-/**
- * Sizes
- */
+/** Sizes */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -178,7 +211,7 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
 });
-renderer.clearColor("0xffffff");
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -190,22 +223,6 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - previousTime;
   previousTime = elapsedTime;
-
-  // if (mixer !== null) {
-  //   mixer.update(deltaTime);
-  // }
-
-  // if (mixer1 !== null) {
-  //   mixer1.update(deltaTime);
-  // }
-
-  // if (mixer2 !== null) {
-  //   mixer2.update(deltaTime);
-  // }
-
-  // if (mixer3 !== null) {
-  //   mixer3.update(deltaTime);
-  // }
 
   /** Update controls */
   controls.update();
