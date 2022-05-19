@@ -8,27 +8,41 @@
   <body>
     <div class="main">
       <canvas class="webgl"></canvas>
+      <!-- left side panel -->
       <div class="form">
-        <!-- <button class="btn">click me</button> -->
+        <!-- change numbers of the beton wall -->
         <div>
           <label for="side-number" class="label-side-number">change here</label>
           <input
             name="side-number"
             type="number"
             class="side-numbers"
-            value="2"
-            min="2"
+            value="10"
+            min="10"
             max="20"
             step="1"
           />
         </div>
+        <!-- end change numbers of the beton wall -->
+        <!-- change the width of the beton wall -->
         <div>
           <label for="side-number" class="label-side-number"
             >change width</label
           >
-          <input type="number" min="1" max="50" step="1" class="side-width" />
+          <input type="number" min="0" max="50" step="1" class="side-width" />
         </div>
+        <!-- end change the width of the beton wall -->
+
+        <!-- Rear wall -->
+        <div class="rear-wall">
+          <button id="rear-wall-on" class="btn-Rear-wall">Rear wall on</button>
+          <button id="rear-wall-off" class="btn-Rear-wall">
+            Rear wall off
+          </button>
+        </div>
+        <!-- end Rear wall -->
       </div>
+      <!-- end left side panel -->
     </div>
   </body>
 </html>

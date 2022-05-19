@@ -6,13 +6,26 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
 /** Base */
-let sideNumber = 2;
+let sideNumber = 10;
 let cloneRightSide = new THREE.Object3D();
-let cloneLeftSide;
+let cloneLeftSide = new THREE.Object3D();
+
 const rightGroup = new THREE.Group();
 const leftGroup = new THREE.Group();
+const midleGroup = new THREE.Group();
+
 let rightSide;
 let lefttSide;
+let rearWallRight;
+let rearWallLeft;
+let rearWallMidel;
+
+let lastElement;
+let pos;
+let posLeft;
+let rwr;
+let rwmP;
+let rwmS;
 
 /** Debug */
 const gui = new dat.GUI({
@@ -24,60 +37,94 @@ const gui = new dat.GUI({
 const canvas = document.querySelector("canvas.webgl");
 const inputNumberOfSide = document.querySelector(".side-numbers");
 const inputSideWidth = document.querySelector(".side-width");
+const btnRearWallOn = document.querySelector("#rear-wall-on");
+const btnRearWallOff = document.querySelector("#rear-wall-off");
 
 /** addEventListener */
 inputNumberOfSide.addEventListener("change", (e) => {
   sideNumber = e.target.value;
+  console.log(typeof sideNumber);
   // sideNumber = parseInt(inputNumberOfSide.value);
   sideLoop(sideNumber);
 });
 
 inputSideWidth.addEventListener("change", (e) => {
-  const widthOfSide = e.target.value;
-  rightGroup.position.x = parseInt(widthOfSide);
+  const widthOfSide = parseInt(e.target.value);
+  if (isNaN(widthOfSide && widthOfSide === null && widthOfSide > 0)) {
+    return;
+  } else {
+    rightGroup.position.x = widthOfSide;
+    if (midleGroup.visible === true) {
+      rearWallRight.position.x = rwr + widthOfSide;
+      rearWallMidel.position.x = rwmP + widthOfSide / 2;
+      rearWallMidel.scale.x = 0.8023064732551575 + widthOfSide / 2;
+
+      console.log("rearWallMidel: ", rearWallMidel);
+      // rearWallMidel.position.x += widthOfSide / 2;
+      // rearWallMidel.scale.x = widthOfSide;
+    }
+  }
+});
+
+btnRearWallOff.addEventListener("click", () => {
+  midleGroup.visible = false;
+});
+
+btnRearWallOn.addEventListener("click", () => {
+  midleGroup.visible = true;
+  midleGroup.position.z = pos.z - 2;
 });
 /** end EventListener */
 
 /** function */
 const sideLoop = (num) => {
-  const lastElement = rightGroup.children.length - 1;
+  lastElement = rightGroup.children.length - 1;
+
   const last = rightGroup.children.length;
   let x = num - last;
 
   if (last > num) {
-    let removeEle = rightGroup.children.length - num;
-    console.log("last: ", last);
-    for (let i = 0; i < removeEle; i++) {
-      let le = rightGroup.children.length - 1;
-      let elId = rightGroup.children[le].uuid;
+    let removeRightEle = rightGroup.children.length - num;
+    // console.log("last: ", last);
+    for (let i = 0; i < removeRightEle; i++) {
+      let leR = rightGroup.children.length - 1;
+      let leL = leftGroup.children.length - 1;
 
-      console.log("cloneRightSide: ", cloneRightSide);
-      console.log("rightGroup: ", rightGroup.children[le]);
-      console.log("removeEle: ", removeEle);
-
-      rightGroup.remove(rightGroup.children[le]);
+      rightGroup.remove(rightGroup.children[leR]);
       scene.add(rightGroup);
 
-      console.log("last loop: ", last);
+      leftGroup.remove(leftGroup.children[leL]);
+
+      if (midleGroup.visible === true) {
+        lastElement = rightGroup.children.length - 1;
+        pos = rightGroup.children[lastElement].position;
+        midleGroup.position.z = pos.z;
+      }
+
+      scene.add(leftGroup);
     }
   } else {
     for (let i = 0; i <= x; i++) {
-      let pos = rightGroup.children[lastElement].position;
-      let posLeft = leftGroup.children[lastElement].position;
+      lastElement = rightGroup.children.length - 1;
+
+      pos = rightGroup.children[lastElement].position;
+      posLeft = leftGroup.children[lastElement].position;
 
       cloneRightSide = rightSide.clone();
       cloneLeftSide = lefttSide.clone();
 
-      cloneRightSide.position.set(pos.x, pos.y, pos.z + 2 * -2);
+      if (midleGroup.visible === true) {
+        midleGroup.position.z = pos.z - 2;
+      }
+
+      cloneRightSide.position.set(pos.x, pos.y, pos.z + 1 * -2);
       rightGroup.add(cloneRightSide);
-      rightGroup.scale.set(0.5, 0.5, 0.5);
 
-      cloneLeftSide.position.set(posLeft.x, posLeft.y, posLeft.z + 2 * -2);
-
+      cloneLeftSide.position.set(posLeft.x, posLeft.y, posLeft.z + 1 * -2);
       leftGroup.add(cloneLeftSide);
-      leftGroup.scale.set(0.5, 0.5, 0.5);
     }
   }
+
   scene.add(rightGroup, leftGroup);
 };
 
@@ -85,9 +132,15 @@ const sideLoop = (num) => {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xd9eaf9);
 
+/** Material */
+const material = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  metalness: 1,
+  roughness: 1,
+});
+material.DoubleSide = true;
+
 /** Loaders */
-/** Texture loader */
-// const textureLoader = new THREE.TextureLoader();
 
 /** Draco loader */
 const dracoLoader = new DRACOLoader();
@@ -102,7 +155,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 
 /** light */
 const light1 = new THREE.PointLight(0xffffff, 1, 800);
-light1.position.set(-2, -1, 0);
+light1.position.set(-9.25, 7, 0);
 scene.add(light1);
 
 gui.add(light1.position, "x").min(-100).max(100).step(0.25).name("light1 X");
@@ -110,7 +163,7 @@ gui.add(light1.position, "y").min(-100).max(100).step(0.25).name("light1 Y");
 gui.add(light1.position, "z").min(-100).max(100).step(0.25).name("light1 Z");
 
 const light2 = new THREE.PointLight(0xffffff, 1, 1000);
-light2.position.set(3, 0, 1);
+light2.position.set(27.25, 0, 1);
 scene.add(light2);
 
 gui.add(light2.position, "x").min(-150).max(100).step(0.25).name("light2 X");
@@ -125,20 +178,36 @@ scene.add(directionalLight);
 const light = new THREE.AmbientLight(0x404040);
 scene.add(light);
 
-/** Loader */
-gltfLoader.load("boschbeton.glb", (gltf) => {
+/** gltf Loader */
+gltfLoader.load("boschbetonV101.glb", (gltf) => {
   const model = gltf.scene;
-  model.scale.set(0.5, 0.5, 0.5);
+
   rightSide = model.children[1];
   lefttSide = model.children[2];
 
-  rightGroup.add(rightSide);
-  leftGroup.add(lefttSide);
-  rightGroup.scale.set(0.5, 0.5, 0.5);
-  leftGroup.scale.set(0.5, 0.5, 0.5);
-  // cloneLeftSide = lefttSide.clone();
+  rearWallRight = model.children[4];
+  rearWallLeft = model.children[5];
+  rearWallMidel = model.children[6];
+  midleGroup.add(rearWallRight, rearWallLeft, rearWallMidel);
+  midleGroup.visible = false;
 
-  sideLoop(sideNumber);
+  rwr = rearWallRight.position.x;
+  rwmP = rearWallMidel.position.x;
+  rwmS = rearWallMidel.scale.x;
+
+  console.log("rwmS", rwmS);
+
+  rightGroup.add(rightSide);
+
+  rightGroup.traverse((child) => {
+    child.material = material;
+  });
+
+  leftGroup.add(lefttSide);
+
+  leftGroup.traverse((child) => {
+    child.material = material;
+  });
 
   gui
     .add(model.rotation, "x")
@@ -159,7 +228,8 @@ gltfLoader.load("boschbeton.glb", (gltf) => {
     .step(0.01)
     .name("model rotation Z");
 
-  scene.add(gltf.scene, rightGroup, leftGroup);
+  scene.add(gltf.scene, rightGroup, leftGroup, midleGroup);
+  sideLoop(sideNumber);
 }); /** end loader */
 
 /** Sizes */
