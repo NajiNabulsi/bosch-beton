@@ -30,7 +30,7 @@ let rwmS;
 /** Debug */
 const gui = new dat.GUI({
   width: 200,
-  closed: true,
+  closed: true
 });
 
 /** Query Selector */
@@ -41,14 +41,14 @@ const btnRearWallOn = document.querySelector("#rear-wall-on");
 const btnRearWallOff = document.querySelector("#rear-wall-off");
 
 /** addEventListener */
-inputNumberOfSide.addEventListener("change", (e) => {
+inputNumberOfSide.addEventListener("change", e => {
   sideNumber = e.target.value;
   console.log(typeof sideNumber);
   // sideNumber = parseInt(inputNumberOfSide.value);
   sideLoop(sideNumber);
 });
 
-inputSideWidth.addEventListener("change", (e) => {
+inputSideWidth.addEventListener("change", e => {
   const widthOfSide = parseInt(e.target.value);
   if (isNaN(widthOfSide && widthOfSide === null && widthOfSide > 0)) {
     return;
@@ -77,7 +77,7 @@ btnRearWallOn.addEventListener("click", () => {
 /** end EventListener */
 
 /** function */
-const sideLoop = (num) => {
+const sideLoop = num => {
   lastElement = rightGroup.children.length - 1;
 
   const last = rightGroup.children.length;
@@ -136,7 +136,7 @@ scene.background = new THREE.Color(0xd9eaf9);
 const material = new THREE.MeshStandardMaterial({
   color: 0xffffff,
   metalness: 1,
-  roughness: 1,
+  roughness: 1
 });
 material.DoubleSide = true;
 
@@ -179,8 +179,9 @@ const light = new THREE.AmbientLight(0x404040);
 scene.add(light);
 
 /** gltf Loader */
-gltfLoader.load("boschbetonV101.glb", (gltf) => {
+gltfLoader.load("boschbetonV101.glb", gltf => {
   const model = gltf.scene;
+  console.log("gltf: ", gltf);
 
   rightSide = model.children[1];
   lefttSide = model.children[2];
@@ -199,13 +200,19 @@ gltfLoader.load("boschbetonV101.glb", (gltf) => {
 
   rightGroup.add(rightSide);
 
-  rightGroup.traverse((child) => {
+  rightGroup.traverse(child => {
     child.material = material;
   });
 
   leftGroup.add(lefttSide);
 
-  leftGroup.traverse((child) => {
+  model.position.set(2, -2, 0);
+  rightGroup.position.set(2, -2, 0);
+  leftGroup.position.set(2, -2, 0);
+  midleGroup.position.y = model.position.y;
+  midleGroup.position.x = rightGroup.position.x;
+
+  leftGroup.traverse(child => {
     child.material = material;
   });
 
@@ -235,7 +242,7 @@ gltfLoader.load("boschbetonV101.glb", (gltf) => {
 /** Sizes */
 const sizes = {
   width: window.innerWidth,
-  height: window.innerHeight,
+  height: window.innerHeight
 };
 
 window.addEventListener("resize", () => {
@@ -262,9 +269,13 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.x = -10.25;
-camera.position.y = 4;
-camera.position.z = 9.25;
+// camera.position.x = -10.25;
+// camera.position.y = 4;
+// camera.position.z = 9.25;
+
+camera.position.x = -3;
+camera.position.y = 3;
+camera.position.z = 8;
 
 gui.add(camera.position, "x").min(-150).max(100).step(0.25).name("camera X");
 gui.add(camera.position, "y").min(-150).max(100).step(0.25).name("camera Y");
@@ -279,7 +290,7 @@ controls.enableDamping = true;
 /** Renderer */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
-  antialias: true,
+  antialias: true
 });
 
 renderer.setSize(sizes.width, sizes.height);
