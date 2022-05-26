@@ -205,6 +205,12 @@ gltfLoader.load("boschbetonV101.glb", (gltf) => {
 
   leftGroup.add(lefttSide);
 
+  model.position.set(2, -2, 0);
+  rightGroup.position.set(2, -2, 0);
+  leftGroup.position.set(2, -2, 0);
+  midleGroup.position.y = model.position.y;
+  midleGroup.position.x = rightGroup.position.x;
+
   leftGroup.traverse((child) => {
     child.material = material;
   });
