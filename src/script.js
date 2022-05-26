@@ -72,7 +72,7 @@ btnRearWallOff.addEventListener("click", () => {
 /** show the midle rear wall */
 btnRearWallOn.addEventListener("click", () => {
   if (widthOfSide > 0) {
-    rearWallRight.position.x = 2 + rightGroup.position.x;
+    rearWallRight.position.x = rightGroup.position.x;
     rearWallMidel.position.x = rearWallRight.position.x - 3 - widthOfSide / 2;
     rearWallMidel.scale.x = 1 + widthOfSide / 4;
   }
