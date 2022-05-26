@@ -57,7 +57,7 @@ inputSideWidth.addEventListener("change", (e) => {
     rightGroup.position.x = widthOfSide;
 
     if (midleGroup.visible === true) {
-      rearWallRight.position.x = 2 + rightGroup.position.x;
+      rearWallRight.position.x = rightGroup.position.x;
       rearWallMidel.position.x = rearWallRight.position.x - 3 - widthOfSide / 2;
       rearWallMidel.scale.x = 1 + widthOfSide / 4;
     }
