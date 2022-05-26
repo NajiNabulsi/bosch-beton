@@ -27,6 +27,7 @@ let rwr;
 let rwmP;
 let rwmS;
 
+let widthOfSide;
 /** Debug */
 const gui = new dat.GUI({
   width: 200,
@@ -41,38 +42,42 @@ const btnRearWallOn = document.querySelector("#rear-wall-on");
 const btnRearWallOff = document.querySelector("#rear-wall-off");
 
 /** addEventListener */
+/** change the number of the sids */
 inputNumberOfSide.addEventListener("change", (e) => {
   sideNumber = e.target.value;
-  console.log(typeof sideNumber);
-  // sideNumber = parseInt(inputNumberOfSide.value);
   sideLoop(sideNumber);
 });
 
+/** change the number of the width */
 inputSideWidth.addEventListener("change", (e) => {
-  const widthOfSide = parseInt(e.target.value);
+  widthOfSide = parseInt(e.target.value);
   if (isNaN(widthOfSide && widthOfSide === null && widthOfSide > 0)) {
     return;
   } else {
     rightGroup.position.x = widthOfSide;
-    if (midleGroup.visible === true) {
-      rearWallRight.position.x = rwr + widthOfSide;
-      rearWallMidel.position.x = rwmP + widthOfSide / 2;
-      rearWallMidel.scale.x = 0.8023064732551575 + widthOfSide / 2;
 
-      console.log("rearWallMidel: ", rearWallMidel);
-      // rearWallMidel.position.x += widthOfSide / 2;
-      // rearWallMidel.scale.x = widthOfSide;
+    if (midleGroup.visible === true) {
+      rearWallRight.position.x = 2 + rightGroup.position.x;
+      rearWallMidel.position.x = rearWallRight.position.x - 3 - widthOfSide / 2;
+      rearWallMidel.scale.x = 1 + widthOfSide / 4;
     }
   }
 });
 
+/** hide the midle rear wall */
 btnRearWallOff.addEventListener("click", () => {
   midleGroup.visible = false;
 });
 
+/** show the midle rear wall */
 btnRearWallOn.addEventListener("click", () => {
-  midleGroup.visible = true;
+  if (widthOfSide > 0) {
+    rearWallRight.position.x = 2 + rightGroup.position.x;
+    rearWallMidel.position.x = rearWallRight.position.x - 3 - widthOfSide / 2;
+    rearWallMidel.scale.x = 1 + widthOfSide / 4;
+  }
   midleGroup.position.z = pos.z - 2;
+  midleGroup.visible = true;
 });
 /** end EventListener */
 
@@ -150,9 +155,6 @@ dracoLoader.setDecoderPath("draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-/** Raycaster */
-// const raycaster = new THREE.Raycaster();
-
 /** light */
 const light1 = new THREE.PointLight(0xffffff, 1, 800);
 light1.position.set(-9.25, 7, 0);
@@ -181,22 +183,20 @@ scene.add(light);
 /** gltf Loader */
 gltfLoader.load("boschbetonV101.glb", (gltf) => {
   const model = gltf.scene;
-
+  console.log("gltf.scene: ", gltf.scene.children[6]);
   rightSide = model.children[1];
   lefttSide = model.children[2];
 
-  rearWallRight = model.children[4];
+  rearWallMidel = model.children[4];
   rearWallLeft = model.children[5];
-  rearWallMidel = model.children[6];
+
+  rearWallRight = model.children[6];
   midleGroup.add(rearWallRight, rearWallLeft, rearWallMidel);
   midleGroup.visible = false;
 
   rwr = rearWallRight.position.x;
   rwmP = rearWallMidel.position.x;
   rwmS = rearWallMidel.scale.x;
-
-  console.log("rwmS", rwmS);
-
   rightGroup.add(rightSide);
 
   rightGroup.traverse((child) => {
@@ -262,9 +262,9 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.x = -10.25;
-camera.position.y = 4;
-camera.position.z = 9.25;
+camera.position.x = -4;
+camera.position.y = 5;
+camera.position.z = 14;
 
 gui.add(camera.position, "x").min(-150).max(100).step(0.25).name("camera X");
 gui.add(camera.position, "y").min(-150).max(100).step(0.25).name("camera Y");
