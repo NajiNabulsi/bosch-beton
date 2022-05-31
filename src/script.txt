@@ -18,23 +18,9 @@ const rightGroup = new THREE.Group();
 const leftGroup = new THREE.Group();
 const midleGroup = new THREE.Group();
 
-let rightSecond = new THREE.Object3D();
-let leftSecond = new THREE.Object3D();
-let leftSecondAreaGroup = new THREE.Group();
-let rightSecondAreaGroup = new THREE.Group();
+let rightSecond = new THREE.Group();
+let leftSecond = new THREE.Group();
 let secondMidleGroup = new THREE.Group();
-
-let rightThrid = new THREE.Object3D();
-let leftThird = new THREE.Object3D();
-let leftThridAreaGroup = new THREE.Group();
-let rightThridAreaGroup = new THREE.Group();
-let ThridMidleGroup = new THREE.Group();
-
-let rightFour = new THREE.Object3D();
-let leftFour = new THREE.Object3D();
-let leftFourAreaGroup = new THREE.Group();
-let rightFourAreaGroup = new THREE.Group();
-let FourMidleGroup = new THREE.Group();
 
 let thirdAreaRight = new THREE.Group();
 let thridAreaLeft = new THREE.Group();
@@ -118,8 +104,8 @@ inputSideWidth.addEventListener("change", (e) => {
       rearWallMidel.scale.x = 1 + widthOfSide / 4;
       midleClone();
     }
-    // rightLeftClone(rightSecond, leftSecond, 9, 1, widthOfSide);
-    // rightLeftClone(thirdAreaRight, thridAreaLeft, 18, 3, widthOfSide);
+    rightLeftClone(rightSecond, leftSecond, 9, 1, widthOfSide);
+    rightLeftClone(thirdAreaRight, thridAreaLeft, 18, 3, widthOfSide);
   }
 });
 
@@ -148,19 +134,19 @@ btnRearWallOn.addEventListener("click", () => {
 
 two.addEventListener("click", () => {
   secondArea = true;
-  // rightSecond = leftGroup.clone();
-  // leftSecond = rightGroup.clone();
-  // secondMidleGroup = midleGroup.clone();
-  // console.log("secondMidleGroup:", secondMidleGroup);
-  // secondMidleGroup.visible = false;
-  // rightLeftClone(rightSecond, leftSecond, 9, 1, widthOfSide);
-  // midleClone();
+  rightSecond = leftGroup.clone();
+  leftSecond = rightGroup.clone();
+  secondMidleGroup = midleGroup.clone();
+  console.log("secondMidleGroup:", secondMidleGroup);
+  secondMidleGroup.visible = false;
+  rightLeftClone(rightSecond, leftSecond, 9, 1, widthOfSide);
+  midleClone();
 
-  // if (midleGroup.visible === true) {
-  //   secondMidleGroup.visible = true;
-  // }
+  if (midleGroup.visible === true) {
+    secondMidleGroup.visible = true;
+  }
 
-  // scene.add(rightSecond, leftSecond, secondMidleGroup);
+  scene.add(rightSecond, leftSecond, secondMidleGroup);
 });
 /** end add second clon */
 
@@ -185,7 +171,7 @@ const sideLoop = (num) => {
 
   if (last > num) {
     let removeRightEle = rightGroup.children.length - num;
-
+    // console.log("last: ", last);
     for (let i = 0; i < removeRightEle; i++) {
       let leR = rightGroup.children.length - 1;
       let leL = leftGroup.children.length - 1;
@@ -222,71 +208,10 @@ const sideLoop = (num) => {
 
       cloneLeftSide.position.set(posLeft.x, posLeft.y, posLeft.z + 1 * -2);
       leftGroup.add(cloneLeftSide);
-
-      leftSecond = lefttSide.clone();
-      leftSecond.position.set(
-        cloneRightSide.position.x + 4,
-        cloneRightSide.position.y - 2,
-        cloneRightSide.position.z
-      );
-
-      leftSecondAreaGroup.add(leftSecond);
-
-      rightSecond = rightSide.clone();
-      rightSecond.position.set(
-        leftSecond.position.x + 4 + widthOfSide,
-        leftSecond.position.y,
-        leftSecond.position.z
-      );
-
-      rightSecondAreaGroup.add(rightSecond);
-
-      leftThird = lefttSide.clone();
-      leftThird.position.set(
-        rightSecond.position.x + 4,
-        rightSecond.position.y,
-        rightSecond.position.z
-      );
-      leftThridAreaGroup.add(leftThird);
-
-      rightThrid = rightSide.clone();
-      rightThrid.position.set(
-        leftThird.position.x + 4 + widthOfSide,
-        leftThird.position.y,
-        leftThird.position.z
-      );
-
-      rightThridAreaGroup.add(rightThrid);
-
-      leftFour = lefttSide.clone();
-      leftFour.position.set(
-        rightThrid.position.x + 4,
-        rightThrid.position.y,
-        rightThrid.position.z
-      );
-      leftFourAreaGroup.add(leftFour);
-
-      rightThrid = rightSide.clone();
-      rightThrid.position.set(
-        leftFour.position.x + 4 + widthOfSide,
-        leftFour.position.y,
-        leftFour.position.z
-      );
-
-      rightThridAreaGroup.add(rightThrid);
     }
   }
 
-  scene.add(
-    rightGroup,
-    leftGroup,
-    leftSecondAreaGroup,
-    rightSecondAreaGroup,
-    leftThridAreaGroup,
-    rightThridAreaGroup,
-    rightThridAreaGroup,
-    leftFourAreaGroup
-  );
+  scene.add(rightGroup, leftGroup);
 };
 
 /** Scene */
@@ -370,6 +295,25 @@ gltfLoader.load("boschbetonV101.glb", (gltf) => {
   leftGroup.traverse((child) => {
     child.material = material;
   });
+
+  gui
+    .add(model.rotation, "x")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation X");
+  gui
+    .add(model.rotation, "y")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation Y");
+  gui
+    .add(model.rotation, "z")
+    .min(-150)
+    .max(100)
+    .step(0.01)
+    .name("model rotation Z");
 
   scene.add(gltf.scene, rightGroup, leftGroup, midleGroup);
   sideLoop(sideNumber);

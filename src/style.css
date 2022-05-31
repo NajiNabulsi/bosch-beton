@@ -8,6 +8,12 @@ body {
   overflow: hidden;
 }
 
+.fixed_border {
+  border: 1px solid black;
+  border-radius: 15px;
+  background: none;
+}
+
 .webgl {
   position: absolute;
   top: 0;
@@ -54,12 +60,10 @@ body {
 
 .btn-Rear-wall {
   margin: 20px;
-  border: 1px solid black;
-  border-radius: 15px;
-  background: none;
 }
 
-.btn-Rear-wall:hover {
+.btn-Rear-wall:hover,
+.clone div:hover {
   cursor: pointer;
   background-color: black;
   color: white;
@@ -74,4 +78,18 @@ body {
   z-index: 10;
   cursor: pointer;
   border-radius: 5px 0px 0px 5px;
+}
+
+.clone {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.clone div {
+  border: 1px solid black;
+  width: calc(100% / 3);
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

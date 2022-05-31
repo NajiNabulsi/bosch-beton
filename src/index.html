@@ -6,9 +6,10 @@
     <title>35 - Importing and optimizing the scene</title>
   </head>
   <body>
+    <!-- main continer -->
     <div class="main">
       <canvas class="webgl"></canvas>
-      <!-- left side panel -->
+      <!-- left side panel (form) -->
       <div class="form">
         <!-- change numbers of the beton wall -->
         <div>
@@ -42,14 +43,23 @@
 
         <!-- Rear wall -->
         <div class="rear-wall">
-          <button id="rear-wall-on" class="btn-Rear-wall">Rear wall on</button>
-          <button id="rear-wall-off" class="btn-Rear-wall">
+          <button id="rear-wall-on" class="btn-Rear-wall fixed_border">
+            Rear wall on
+          </button>
+          <button id="rear-wall-off" class="btn-Rear-wall fixed_border">
             Rear wall off
           </button>
         </div>
         <!-- end Rear wall -->
+
+        <div class="clone">
+          <div id="two" class="fixed_border">2</div>
+          <div id="three" class="fixed_border">3</div>
+          <div id="four" class="fixed_border">4</div>
+        </div>
       </div>
-      <!-- end left side panel -->
+      <!-- end left side panel (form) -->
     </div>
+    <!-- end main continer -->
   </body>
 </html>
